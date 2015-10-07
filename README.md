@@ -20,13 +20,13 @@ And then execute:
 
 The setup process consists of the following steps:
 
-1. Add an omniauth-saml monkey patch for omniauth-saml PR [56](https://github.com/PracticallyGreen/omniauth-saml/pull/56).
+1. Add an omniauth-saml monkey patch for omniauth-saml PR [#56](https://github.com/PracticallyGreen/omniauth-saml/pull/56).
 1. Configure your routes to handle SAML routes for multiple identity providers
 1. Configure omniauth-saml to choose the appropriate identity provider
 
 ### Monkey Patch omniauth-saml
 
-This step will only be necessary until https://github.com/PracticallyGreen/omniauth-saml/pull/56 merges. Place the following in an initializer:
+This step will only be necessary until omniauth-saml PR [#56](https://github.com/PracticallyGreen/omniauth-saml/pull/56) merges. Place the following in an initializer:
 
 ```
 require 'omniauth-saml'
