@@ -19,9 +19,10 @@ And then execute:
 **I would highly recommend first getting [omniauth-saml](https://github.com/PracticallyGreen/omniauth-saml) setup to work with a single identity provider before attempting to use this gem.** 
 
 The setup process consists of the following steps:
-1) Add an omniauth-saml monkey patch for https://github.com/PracticallyGreen/omniauth-saml/pull/56.
-2) Configure your routes to handle SAML routes for multiple identity providers
-3) Configure omniauth-saml to choose the appropriate identity provider
+
+1. Add an omniauth-saml monkey patch for omniauth-saml PR [56](https://github.com/PracticallyGreen/omniauth-saml/pull/56).
+1. Configure your routes to handle SAML routes for multiple identity providers
+1. Configure omniauth-saml to choose the appropriate identity provider
 
 ### Monkey Patch omniauth-saml
 
