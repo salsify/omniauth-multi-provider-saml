@@ -1,8 +1,6 @@
-# Omniauth::Multi::Provider::Saml
+# Omniauth Multiple Provider SAML
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/omniauth/multi/provider/saml`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This is a simple extension to [omniauth-saml](https://github.com/PracticallyGreen/omniauth-saml) for supporting multiple identity providers based on a URL path segment e.g. dispatching requests to `/auth/saml/foo` to identity provider "foo" and `/app/saml/bar` to identity provider "bar".
 
 ## Installation
 
@@ -20,19 +18,80 @@ Or install it yourself as:
 
     $ gem install omniauth-multi-provider-saml
 
-## Usage
+## Setup
 
-TODO: Write usage instructions here
+**I would highly recommend first getting [omniauth-saml](https://github.com/PracticallyGreen/omniauth-saml) setup to work with a single identity provider before attempting to use this gem.** 
 
-## Development
+The setup process consists of the following steps:
+1) Add an omniauth-saml monkey patch for https://github.com/PracticallyGreen/omniauth-saml/pull/56.
+2) Configure your routes to handle SAML routes for multiple identity providers
+3) Configure omniauth-saml to choose the appropriate identity provider
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Monkey Patch omniauth-saml
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+This step will only be necessary until https://github.com/PracticallyGreen/omniauth-saml/pull/56 merges. Place the following in an initializer:
+
+```
+require 'omniauth-saml'
+
+OmniAuth::Strategies::SAML.class_eval do
+
+  private
+
+  def initialize_copy(orig)
+    super
+    @options = @options.deep_dup
+  end
+end
+```
+
+### Configure SAML Routes
+
+Add something like the following to your routes assuming you're using Rails (your actual URL structure may vary):
+
+```
+MyApplication::Application.routes.draw do
+  match '/auth/saml/:identity_provider_id/callback',
+        via: [:get, :post],
+        to: 'omniauth_callbacks#saml',
+        as: 'user_omniauth_callback'
+
+  match '/auth/saml/:identity_provider_id',
+        via: [:get, :post],
+        to: 'omniauth_callbacks#passthru',
+        as: 'user_omniauth_authorize'
+end
+```
+
+### Configure omniauth-saml to use multiple identity providers
+
+The basic configuration looks something like this:
+
+```
+Rails.application.config.middleware.use OmniAuth::Builder do
+  saml_handler = OmniAuth::SAML::MultiProvider::Handler.new do |identity_provider_id|
+    # Customize this code to return the appropriate SAML options for the given identity provider
+    # See omniauth-saml for details on the supported options
+    identity_provider = IdentityProvider.find_by(uuid: identity_provider_id)
+    identity_provider ? identity_provider.options : {}
+      options.merge!()
+  end
+  
+  saml_provider_options = {
+    # Add any static SAML options
+    name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
+  }.merge(saml_handler.provider_options)
+  provider :saml, saml_options
+end
+```
+The `OmniAuth::SAML::MultiProvider::Handler` constructor supports a few options:
+* `path_prefix` - The base path for OmniAuth. Defaults to `OmniAuth.config.path_prefix`.
+* `provider_name` - The name of the OmniAuth SAML strategy. Defaults to `saml`
+* `identity_provider_id_regex` - The regex for a valid identity provider id. Defaults to `/\w+/`
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/omniauth-multi-provider-saml.
+Bug reports and pull requests are welcome on GitHub at https://github.com/salsify/omniauth-multi-provider-saml.
 
 
 ## License
