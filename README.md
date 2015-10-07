@@ -28,7 +28,7 @@ The setup process consists of the following steps:
 
 This step will only be necessary until omniauth-saml PR [#56](https://github.com/PracticallyGreen/omniauth-saml/pull/56) merges. Place the following in an initializer:
 
-```
+```ruby
 require 'omniauth-saml'
 
 OmniAuth::Strategies::SAML.class_eval do
@@ -46,7 +46,7 @@ end
 
 Add something like the following to your routes assuming you're using Rails (your actual URL structure may vary):
 
-```
+```ruby
 MyApplication::Application.routes.draw do
   match '/auth/saml/:identity_provider_id/callback',
         via: [:get, :post],
@@ -64,7 +64,7 @@ end
 
 The basic configuration looks something like this:
 
-```
+```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
   saml_handler = OmniAuth::SAML::MultiProvider::Handler.new do |identity_provider_id|
     # Customize this code to return the appropriate SAML options for the given identity provider
