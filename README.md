@@ -7,16 +7,12 @@ This is a simple extension to [omniauth-saml](https://github.com/PracticallyGree
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'omniauth-multi-provider-saml'
+gem 'omniauth-multi-provider-saml', github: 'salsify/omniauth-multi-provider-saml'
 ```
 
 And then execute:
 
     $ bundle
-
-Or install it yourself as:
-
-    $ gem install omniauth-multi-provider-saml
 
 ## Setup
 
