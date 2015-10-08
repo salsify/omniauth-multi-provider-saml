@@ -41,24 +41,25 @@ module OmniAuth
         def setup(env)
           identity_provider_id = extract_identity_provider_id(env)
           if identity_provider_id
-            options = env['omniauth.strategy'].options
-            add_path_options(options, identity_provider_id)
-            add_identity_provider_options(options, identity_provider_id)
+            strategy = env['omniauth.strategy']
+            add_path_options(strategy, identity_provider_id)
+            add_identity_provider_options(strategy, identity_provider_id)
           end
         end
 
-        def add_path_options(options, identity_provider_id)
-          options.merge!(
+        def add_path_options(strategy, identity_provider_id)
+          strategy.options.merge!(
               request_path: "#{provider_path_prefix}/#{identity_provider_id}",
               callback_path: "#{provider_path_prefix}/#{identity_provider_id}/callback"
           )
         end
 
-        def add_identity_provider_options(options, identity_provider_id)
+        def add_identity_provider_options(strategy, identity_provider_id)
           identity_provider_options = identity_provider_options_generator.call(identity_provider_id) || {}
-          options.merge!(identity_provider_options)
-        rescue e
-          raise OmniAuth::Strategies::SAML::ValidationError.new('Invalid identity provider id')
+          strategy.options.merge!(identity_provider_options)
+        rescue => e
+          result = strategy.fail!(:invalid_identity_provider, e)
+          throw :warden, result
         end
 
         def request_path?(env)
