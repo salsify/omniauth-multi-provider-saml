@@ -69,9 +69,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   saml_handler = OmniAuth::SAML::MultiProvider::Handler.new do |identity_provider_id|
     # Customize this code to return the appropriate SAML options for the given identity provider
     # See omniauth-saml for details on the supported options
-    identity_provider = IdentityProvider.find_by(uuid: identity_provider_id)
-    identity_provider ? identity_provider.options : {}
-      options.merge!()
+    identity_provider = IdentityProvider.find_by!(uuid: identity_provider_id)
+    identity_provider.options
   end
   
   saml_provider_options = {
