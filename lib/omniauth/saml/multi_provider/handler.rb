@@ -43,7 +43,7 @@ module OmniAuth
           if identity_provider_id
             strategy = env['omniauth.strategy']
             add_path_options(strategy, identity_provider_id)
-            add_identity_provider_options(strategy, identity_provider_id)
+            add_identity_provider_options(strategy, env, identity_provider_id)
           end
         end
 
@@ -54,8 +54,8 @@ module OmniAuth
           )
         end
 
-        def add_identity_provider_options(strategy, identity_provider_id)
-          identity_provider_options = identity_provider_options_generator.call(identity_provider_id) || {}
+        def add_identity_provider_options(strategy, env, identity_provider_id)
+          identity_provider_options = identity_provider_options_generator.call(identity_provider_id, env) || {}
           strategy.options.merge!(identity_provider_options)
         rescue => e
           result = strategy.fail!(:invalid_identity_provider, e)
