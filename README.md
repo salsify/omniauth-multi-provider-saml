@@ -66,23 +66,15 @@ The basic configuration looks something like this:
 
 ```ruby
 Rails.application.config.middleware.use OmniAuth::Builder do
-  saml_handler = OmniAuth::SAML::MultiProvider::Handler.new do |identity_provider_id, rack_env|
+  OmniAuth::SAML::MultiProvider.register(self, issuer: 'Salsify') do |identity_provider_id, rack_env|
     # Customize this code to return the appropriate SAML options for the given identity provider
     # See omniauth-saml for details on the supported options
     identity_provider = IdentityProvider.find_by!(uuid: identity_provider_id)
     identity_provider.options
   end
-  
-  saml_provider_options = {
-    # Add any static SAML options
-    name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress'
-  }.merge(saml_handler.provider_options)
-  provider :saml, saml_options
 end
 ```
-The `OmniAuth::SAML::MultiProvider::Handler` constructor supports a few options:
-* `path_prefix` - The base path for OmniAuth. Defaults to `OmniAuth.config.path_prefix`.
-* `provider_name` - The name of the OmniAuth SAML strategy. Defaults to `saml`
+The `OmniAuth::SAML::MultiProvider.register` method takes a hash of static omniauth-saml options and a block to generate any request specific options. It also takes the following options:
 * `identity_provider_id_regex` - The regex for a valid identity provider id. Defaults to `/\w+/`
 
 ## Contributing

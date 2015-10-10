@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe OmniAuth::SAML::MultiProvider::Handler do
   let(:path_prefix) { '/users/auth' }
-  let(:provider_name) { 'saml2' }
   let(:identity_provider_id_regex) { /[[:alpha:]]+/ }
   let(:options_generator) do
     Proc.new do
@@ -13,7 +12,7 @@ describe OmniAuth::SAML::MultiProvider::Handler do
   let(:mock_strategy) { double(options: strategy_options) }
 
   let(:handler) do
-    OmniAuth::SAML::MultiProvider::Handler.new(path_prefix: path_prefix, provider_name: provider_name,
+    OmniAuth::SAML::MultiProvider::Handler.new(path_prefix: path_prefix,
                                                identity_provider_id_regex: identity_provider_id_regex,
                                                &options_generator)
   end
@@ -21,33 +20,21 @@ describe OmniAuth::SAML::MultiProvider::Handler do
   let(:provider_options) { handler.provider_options }
 
   describe "#provider_options" do
-    describe "path_prefix" do
-      specify do
-        expect(provider_options[:path_prefix]).to eq path_prefix
-      end
-    end
-
-    describe "name" do
-      specify do
-        expect(provider_options[:name]).to eq provider_name
-      end
-    end
-
     describe "request_path" do
       let(:request_path_proc) { provider_options[:request_path] }
 
       it "returns true for request paths" do
-        rack_env = create_rack_env(path: "#{path_prefix}/#{provider_name}/idp")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/idp")
         expect(request_path_proc.call(rack_env)).to eq true
       end
 
       it "returns true for request paths ending in a slash" do
-        rack_env = create_rack_env(path: "#{path_prefix}/#{provider_name}/idp/")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/idp/")
         expect(request_path_proc.call(rack_env)).to eq true
       end
 
       it "returns false for request paths with additional path segments" do
-        rack_env = create_rack_env(path: "#{path_prefix}/#{provider_name}/idp/foo")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/idp/foo")
         expect(request_path_proc.call(rack_env)).to eq false
       end
 
@@ -66,17 +53,17 @@ describe OmniAuth::SAML::MultiProvider::Handler do
       let(:callback_path_proc) { provider_options[:callback_path] }
 
       it "returns true for request paths" do
-        rack_env = create_rack_env(path: "#{path_prefix}/#{provider_name}/idp/callback")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/idp/callback")
         expect(callback_path_proc.call(rack_env)).to eq true
       end
 
       it "returns true for request paths ending in a slash" do
-        rack_env = create_rack_env(path: "#{path_prefix}/#{provider_name}/idp/callback/")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/idp/callback/")
         expect(callback_path_proc.call(rack_env)).to eq true
       end
 
       it "returns false for request paths with additional path segments" do
-        rack_env = create_rack_env(path: "#{path_prefix}/#{provider_name}/idp/callback/foo")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/idp/callback/foo")
         expect(callback_path_proc.call(rack_env)).to eq false
       end
 
@@ -94,7 +81,7 @@ describe OmniAuth::SAML::MultiProvider::Handler do
     describe "#setup" do
       let(:identity_provider_id) { 'idp' }
       let(:rack_env) do
-        create_rack_env(path: "#{path_prefix}/#{provider_name}/#{identity_provider_id}/callback")
+        create_rack_env(path: "#{path_prefix}/saml/#{identity_provider_id}/callback")
       end
 
       let(:options_generator) do
@@ -109,11 +96,11 @@ describe OmniAuth::SAML::MultiProvider::Handler do
         end
 
         it "sets the strategy's request_path" do
-          expect(strategy_options[:request_path]).to eq "#{path_prefix}/#{provider_name}/#{identity_provider_id}"
+          expect(strategy_options[:request_path]).to eq "#{path_prefix}/saml/#{identity_provider_id}"
         end
 
         it "sets the strategy's callback_path" do
-          expect(strategy_options[:callback_path]).to eq "#{path_prefix}/#{provider_name}/#{identity_provider_id}/callback"
+          expect(strategy_options[:callback_path]).to eq "#{path_prefix}/saml/#{identity_provider_id}/callback"
         end
 
         it "adds options returned by the option generator proc" do

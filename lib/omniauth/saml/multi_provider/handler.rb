@@ -5,19 +5,18 @@ module OmniAuth
   module SAML
     module MultiProvider
       class Handler
-        attr_reader :path_prefix, :provider_name, :identity_provider_id_regex
+        attr_reader :path_prefix, :identity_provider_id_regex
 
-        def initialize(path_prefix: OmniAuth.config.path_prefix, provider_name: 'saml',
+        def initialize(path_prefix: OmniAuth.config.path_prefix,
                        identity_provider_id_regex: /\w+/, &identity_provider_options_generator)
           raise 'Missing provider options generator block' unless block_given?
 
           @path_prefix = path_prefix
-          @provider_name = provider_name
           @identity_provider_id_regex
           @identity_provider_options_generator = identity_provider_options_generator
 
           # Eagerly compute these since lazy evaluation will not be threadsafe
-          @provider_path_prefix = "#{path_prefix}/#{provider_name}"
+          @provider_path_prefix = "#{path_prefix}/saml"
           @saml_path_regex = /^#{@provider_path_prefix}\/(?<identity_provider_id>#{identity_provider_id_regex})/
           @request_path_regex = /#{saml_path_regex}\/?$/
           @callback_path_regex = /#{saml_path_regex}\/callback\/?$/
@@ -25,8 +24,6 @@ module OmniAuth
 
         def provider_options
           {
-              path_prefix: path_prefix,
-              name: provider_name,
               request_path: method(:request_path?),
               callback_path: method(:callback_path?),
               setup: method(:setup)
