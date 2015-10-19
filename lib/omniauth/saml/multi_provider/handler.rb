@@ -12,12 +12,12 @@ module OmniAuth
           raise 'Missing provider options generator block' unless block_given?
 
           @path_prefix = path_prefix
-          @identity_provider_id_regex
+          @identity_provider_id_regex = identity_provider_id_regex
           @identity_provider_options_generator = identity_provider_options_generator
 
           # Eagerly compute these since lazy evaluation will not be threadsafe
-          @provider_path_prefix = "#{path_prefix}/saml"
-          @saml_path_regex = /^#{@provider_path_prefix}\/(?<identity_provider_id>#{identity_provider_id_regex})/
+          @provider_path_prefix = "#{@path_prefix}/saml"
+          @saml_path_regex = /^#{@provider_path_prefix}\/(?<identity_provider_id>#{@identity_provider_id_regex})/
           @request_path_regex = /#{saml_path_regex}\/?$/
           @callback_path_regex = /#{saml_path_regex}\/callback\/?$/
         end
