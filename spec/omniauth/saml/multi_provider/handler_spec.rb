@@ -39,7 +39,7 @@ describe OmniAuth::SAML::MultiProvider::Handler do
       end
 
       it "returns false for request paths that don't match the identity provider id regex" do
-        rack_env = create_rack_env(path: "#{path_prefix}/foo123")
+        rack_env = create_rack_env(path: "#{path_prefix}/saml/foo123")
         expect(request_path_proc.call(rack_env)).to eq false
       end
 
