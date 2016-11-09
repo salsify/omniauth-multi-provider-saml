@@ -1,3 +1,5 @@
+**This gem is deprecated in favor of the [omniauth-multi-provider](https://github.com/salsify/omniauth-multi-provider) gem**
+
 # Omniauth Multiple Provider SAML
 
 This is a simple extension to [omniauth-saml](https://github.com/PracticallyGreen/omniauth-saml) for supporting multiple identity providers based on a URL path segment e.g. dispatching requests to `/auth/saml/foo` to identity provider "foo" and `/app/saml/bar` to identity provider "bar".
